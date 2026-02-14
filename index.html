@@ -50,15 +50,12 @@
                 opacity: 0;
                 transform: translateY(0) rotate(0deg) scale(0.5);
             }
-            10% {
+            5% {
                 opacity: 0.8;
             }
-            90% {
-                opacity: 0.6;
-            }
             100% {
-                opacity: 0;
-                transform: translateY(-110vh) rotate(720deg) scale(1.2);
+                opacity: 0.8;
+                transform: translateY(-120vh) rotate(720deg) scale(1.2);
             }
         }
 
@@ -187,7 +184,7 @@
             50% { opacity: 1; transform: scale(1); }
         }
 
-        /* Envelope animation at start */
+        /* Envelope overlay */
         .envelope-overlay {
             position: fixed;
             top: 0;
@@ -199,7 +196,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
             transition: opacity 1s ease, visibility 1s ease;
         }
 
@@ -209,27 +205,192 @@
             pointer-events: none;
         }
 
-        .envelope {
-            text-align: center;
-            animation: gentlePulse 2s ease-in-out infinite;
+        /* Envelope scene */
+        .envelope-scene {
+            perspective: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 1s ease-in-out;
         }
 
-        .envelope-icon {
-            font-size: 6rem;
-            filter: drop-shadow(0 0 30px rgba(255, 107, 138, 0.6));
+        .envelope-scene.grow {
+            transform: scale(1.6);
+            cursor: default;
         }
 
-        .envelope-text {
+        .envelope-hint {
             font-family: 'Dancing Script', cursive;
             font-size: 1.5rem;
             color: #ff6b8a;
             margin-top: 1.5rem;
-            animation: fadeInUp 1s ease forwards;
+            transition: opacity 0.4s ease;
+        }
+
+        .envelope-hint.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Envelope container */
+        .envelope-wrapper {
+            position: relative;
+            width: 200px;
+            height: 140px;
+            animation: gentlePulse 2s ease-in-out infinite;
+        }
+
+        .envelope-scene.grow .envelope-wrapper {
+            animation: none;
         }
 
         @keyframes gentlePulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
+        }
+
+        /* Envelope body */
+        .envelope-body {
+            position: absolute;
+            bottom: 0;
+            width: 200px;
+            height: 120px;
+            background: linear-gradient(135deg, #c9656f, #a84050);
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+            z-index: 3;
+        }
+
+        .envelope-body::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 100px solid #b8505a;
+            border-right: 100px solid #b8505a;
+            border-top: 70px solid transparent;
+            border-radius: 0 0 8px 8px;
+        }
+
+        /* Heart seal on envelope */
+        .envelope-seal {
+            position: absolute;
+            top: 35px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+            z-index: 6;
+            filter: drop-shadow(0 0 10px rgba(255, 45, 85, 0.6));
+        }
+
+        /* Envelope flap */
+        .envelope-flap {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 100px solid transparent;
+            border-right: 100px solid transparent;
+            border-top: 80px solid #d47580;
+            transform-origin: top center;
+            transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 5;
+        }
+
+        .envelope-flap.open {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        /* Paper that slides out */
+        .envelope-paper {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(0);
+            width: 170px;
+            height: 110px;
+            background: linear-gradient(180deg, #fff8f0, #ffeee8);
+            border-radius: 6px;
+            z-index: 2;
+            transition: transform 1.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .envelope-paper.slide-out {
+            transform: translateX(-50%) translateY(-180px);
+        }
+
+        .paper-question {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.1rem;
+            color: #8b2252;
+            text-align: center;
+            line-height: 1.5;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .paper-question.visible {
+            opacity: 1;
+        }
+
+        /* Buttons */
+        .paper-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .paper-buttons.visible {
+            opacity: 1;
+        }
+
+        .btn-oui, .btn-non {
+            padding: 8px 22px;
+            border: none;
+            border-radius: 20px;
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-oui {
+            background: linear-gradient(135deg, #ff6b8a, #ff2d55);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 45, 85, 0.4);
+        }
+
+        .btn-oui:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 45, 85, 0.6);
+        }
+
+        .btn-non {
+            background: linear-gradient(135deg, #888, #666);
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            position: static;
+        }
+
+        .btn-non.escaping {
+            position: fixed;
+            z-index: 200;
+            transition: left 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        top 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         /* Responsive */
@@ -245,10 +406,25 @@
 <body>
 
     <!-- Envelope intro -->
-    <div class="envelope-overlay" id="envelope" onclick="openEnvelope()">
-        <div class="envelope">
-            <div class="envelope-icon">💌</div>
-            <p class="envelope-text">Clique pour ouvrir...</p>
+    <div class="envelope-overlay" id="envelopeOverlay">
+        <div class="envelope-scene" id="envelopeScene" onclick="openEnvelope()">
+            <div class="envelope-wrapper">
+                <!-- Flap (rabat) -->
+                <div class="envelope-flap" id="envelopeFlap"></div>
+                <!-- Paper -->
+                <div class="envelope-paper" id="envelopePaper">
+                    <p class="paper-question" id="paperQuestion">Clara, veux-tu être ma Valentine ?</p>
+                    <div class="paper-buttons" id="paperButtons">
+                        <button class="btn-oui" onclick="acceptValentine(event)">Oui</button>
+                        <button class="btn-non" id="btnNon" onmouseover="escapeButton()" onclick="escapeButton()">Non</button>
+                    </div>
+                </div>
+                <!-- Body -->
+                <div class="envelope-body">
+                    <span class="envelope-seal">❤️</span>
+                </div>
+            </div>
+            <p class="envelope-hint" id="envelopeHint">Clique pour ouvrir...</p>
         </div>
     </div>
 
@@ -280,14 +456,131 @@
 
         <div class="divider"></div>
 
-        <p class="signature">Avec tout mon amour</p>
+        <p class="signature">Avec tout mon amour, Erwan<br>Je t'aime</p>
     </div>
 
     <script>
-        // Open envelope
+        let envelopeOpened = false;
+
+        // Open envelope - animated sequence
         function openEnvelope() {
-            document.getElementById('envelope').classList.add('opened');
+            if (envelopeOpened) return;
+            envelopeOpened = true;
+
+            const scene = document.getElementById('envelopeScene');
+            const flap = document.getElementById('envelopeFlap');
+            const paper = document.getElementById('envelopePaper');
+            const question = document.getElementById('paperQuestion');
+            const buttons = document.getElementById('paperButtons');
+            const hint = document.getElementById('envelopeHint');
+
+            // Stop click propagation after first click
+            scene.onclick = null;
+            scene.style.cursor = 'default';
+
+            // Step 1: Hide hint text
+            hint.classList.add('hidden');
+
+            // Step 2: Grow envelope
+            scene.classList.add('grow');
+
+            // Step 3: Open flap
+            setTimeout(() => {
+                flap.classList.add('open');
+            }, 900);
+
+            // Step 4: Slide paper out
+            setTimeout(() => {
+                paper.classList.add('slide-out');
+            }, 2000);
+
+            // Step 5: Show question
+            setTimeout(() => {
+                question.classList.add('visible');
+            }, 3200);
+
+            // Step 6: Show buttons
+            setTimeout(() => {
+                buttons.classList.add('visible');
+            }, 3800);
+        }
+
+        // Accept valentine - transition to love letter
+        function acceptValentine(event) {
+            event.stopPropagation();
+            document.getElementById('envelopeOverlay').classList.add('opened');
             startFloatingHearts();
+        }
+
+        // Escape button - "Non" runs away
+        let escapeCount = 0;
+        const escapeMessages = [
+            "Veux-tu vraiment cliquer sur non ? Ma vie sans toi serait d'un vide glacial, je t'aime Clara.",
+            "Chaque instant sans toi est une éternité...",
+            "Tu es la plus belle chose qui me soit arrivée...",
+            "Mon monde n'a de couleurs que grâce à toi...",
+            "Je ne peux pas imaginer ma vie sans ton sourire...",
+        ];
+        let firstMessage = true;
+        let remainingMessages = [];
+
+        function escapeButton() {
+            const btn = document.getElementById('btnNon');
+            const overlay = document.getElementById('envelopeOverlay');
+
+            escapeCount++;
+
+            // Move button out of transformed container on first escape
+            if (!btn.classList.contains('escaping')) {
+                btn.classList.add('escaping');
+                overlay.appendChild(btn);
+            }
+
+            // After 10 attempts, show a romantic message
+            if (escapeCount > 10 && !document.getElementById('sweetMessage')) {
+                const msg = document.createElement('p');
+                msg.id = 'sweetMessage';
+                if (firstMessage) {
+                    msg.textContent = escapeMessages[0];
+                    firstMessage = false;
+                } else {
+                    if (remainingMessages.length === 0) {
+                        remainingMessages = escapeMessages.slice(1).sort(() => Math.random() - 0.5);
+                    }
+                    msg.textContent = remainingMessages.pop();
+                }
+                msg.style.cssText = `
+                    position: fixed;
+                    bottom: 60px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    font-family: 'Dancing Script', cursive;
+                    font-size: 1.5rem;
+                    color: #ff6b8a;
+                    text-align: center;
+                    text-shadow: 0 0 20px rgba(255, 107, 138, 0.5);
+                    opacity: 0;
+                    transition: opacity 1s ease;
+                    z-index: 201;
+                    width: 80%;
+                `;
+                overlay.appendChild(msg);
+                requestAnimationFrame(() => msg.style.opacity = '1');
+
+                // Fade out after 3s then allow new message
+                setTimeout(() => {
+                    msg.style.opacity = '0';
+                    setTimeout(() => msg.remove(), 1000);
+                }, 3000);
+            }
+
+            const maxX = window.innerWidth - 100;
+            const maxY = window.innerHeight - 50;
+            const newX = Math.max(10, Math.random() * maxX);
+            const newY = Math.max(10, Math.random() * maxY);
+
+            btn.style.left = newX + 'px';
+            btn.style.top = newY + 'px';
         }
 
         // Floating hearts in background
