@@ -345,6 +345,12 @@
             align-items: center;
             justify-content: center;
             transition: opacity 1s ease, visibility 1s ease;
+            overflow: hidden;
+        }
+
+        body.overlay-active {
+            overflow: hidden;
+            height: 100vh;
         }
 
         .envelope-overlay.opened {
@@ -548,6 +554,23 @@
             .message { font-size: 1rem; }
             .heart-main { font-size: 3.5rem; }
             .signature { font-size: 1.5rem; }
+
+            .envelope-scene.grow {
+                transform: scale(1.2);
+            }
+
+            .envelope-paper.slide-out {
+                transform: translateX(-50%) translateY(-120px);
+            }
+
+            .paper-question {
+                font-size: 0.95rem;
+            }
+
+            .btn-oui, .btn-non {
+                padding: 6px 16px;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -645,7 +668,16 @@
     </div>
 
     <script>
+        // Lock scroll while overlay is visible
+        document.body.classList.add('overlay-active');
+
         let envelopeOpened = false;
+        let touchStartY = 0;
+
+        // Detect scroll vs tap on mobile
+        document.getElementById('envelopeScene').addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
 
         // Open envelope - animated sequence
         function openEnvelope() {
@@ -694,6 +726,7 @@
         function acceptValentine(event) {
             event.stopPropagation();
             document.getElementById('envelopeOverlay').classList.add('opened');
+            document.body.classList.remove('overlay-active');
             startFloatingHearts();
         }
 
